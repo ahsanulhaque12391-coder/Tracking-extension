@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tracking Health Hub</title>
+  <meta name="description" content="Check and manage all your e-commerce tracking (Meta Pixel, GTM, GA4, TikTok, Google Ads, server-side) in one place.">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <button id="menuBtn" class="icon-btn menu-btn" aria-label="Open menu">☰</button>
+    <a class="brand" href="#/dashboard"><img src="icons/icon.svg" alt="" width="26" height="26"> <span>Tracking Health Hub</span></a>
+    <div class="project-switch">
+      <label for="projectSelect" class="sr-only">Store</label>
+      <select id="projectSelect"></select>
+    </div>
+    <span id="saved" class="saved" aria-live="polite">✓ Saved</span>
+  </header>
+  <div class="layout">
+    <nav id="nav" class="sidebar" aria-label="Main"></nav>
+    <main id="view" class="main"></main>
+  </div>
+  <dialog id="modal"></dialog>
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/scan.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

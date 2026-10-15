@@ -1,0 +1,13 @@
+/* Extension popup */
+body.popup { width: 420px; min-height: 260px; font-size: 14px; }
+.pop-head { display: flex; align-items: center; gap: .6rem; padding: .7rem .9rem; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 2; }
+.pop-main { padding: .8rem .9rem 1rem; display: flex; flex-direction: column; gap: .8rem; }
+.pop-main .health { padding: .7rem .8rem; }
+.pop-main .health h2 { font-size: 1rem; }
+.pop-main .health-light { width: 28px; height: 28px; }
+.hit-group { border: 1px solid var(--border); border-radius: 10px; padding: .55rem .7rem; background: var(--surface); }
+.hit-group b { display: block; }
+.hit-ev { display: flex; justify-content: space-between; gap: .5rem; font-size: .82rem; padding: .15rem 0; border-top: 1px dashed var(--border); }
+.hit-ev:first-of-type { border-top: 0; }
+.pop-actions { display: flex; gap: .4rem; flex-wrap: wrap; }
+.pop-actions .btn { flex: 1; justify-content: center; }
