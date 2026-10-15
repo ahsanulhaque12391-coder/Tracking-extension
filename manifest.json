@@ -3,7 +3,7 @@
   "name": "Tracking Health Hub",
   "version": "1.0.0",
   "description": "Check your store's tracking in one place: Meta Pixel, GTM, GA4, TikTok, Google Ads, server-side (Stape) and more.",
-  "permissions": ["webRequest", "storage"],
+  "permissions": ["webRequest", "storage", "identity"],
   "host_permissions": ["<all_urls>"],
   "background": { "service_worker": "background.js" },
   "action": {

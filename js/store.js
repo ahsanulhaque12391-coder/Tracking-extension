@@ -41,12 +41,17 @@
       checklist: {},
       metrics: [],
       scans: [],
+      connections: {},
+      connData: {},
+      ads: [],
+      adsMeta: {},
+      targets: { breakevenRoas: 1.5, targetRoas: 3, minSpend: 20 },
       log: []
     };
   }
 
   function emptyState() {
-    return { version: 1, projects: [], customTools: [], activeProjectId: null, settings: { theme: "auto", showSecrets: false } };
+    return { version: 1, projects: [], customTools: [], activeProjectId: null, settings: { theme: "auto", showSecrets: false, syncDays: 28, google: {} } };
   }
 
   /*
@@ -91,6 +96,7 @@
   function normalize(state) {
     var s = Object.assign(emptyState(), state || {});
     s.settings = Object.assign(emptyState().settings, s.settings || {});
+    s.settings.google = s.settings.google || {};
     s.customTools = (Array.isArray(s.customTools) ? s.customTools : []).map(function (t) {
       return Object.assign({ name: "Custom tool", short: "", color: "#607d8b", category: "Other", what: "", why: "", fields: [], links: [], checklist: [] }, t, { custom: true, optional: true });
     });
@@ -109,6 +115,11 @@
       np.metrics = Array.isArray(np.metrics) ? np.metrics : [];
       np.metrics.forEach(function (m) { m.id = m.id || uid(); m.platforms = m.platforms || {}; });
       np.scans = Array.isArray(np.scans) ? np.scans : [];
+      np.connections = np.connections && typeof np.connections === "object" ? np.connections : {};
+      np.connData = np.connData && typeof np.connData === "object" ? np.connData : {};
+      np.ads = Array.isArray(np.ads) ? np.ads : [];
+      np.adsMeta = np.adsMeta && typeof np.adsMeta === "object" ? np.adsMeta : {};
+      np.targets = Object.assign({ breakevenRoas: 1.5, targetRoas: 3, minSpend: 20 }, np.targets || {});
       np.log = Array.isArray(np.log) ? np.log : [];
       return np;
     });
@@ -196,6 +207,47 @@
       });
     }
     p.platforms.shop = Object.assign(emptyPlatform(), { status: "live", fields: { mainId: "Shopify", trackingApps: "Meta Facebook & Instagram app\nGTM via theme\nUpsell app (has own pixel)" } });
+    var demoAds = [
+      ["meta", "UGC video – happy customer", "Prospecting – Broad", "Women 25-45", 820, 61000, 1180, 31, 3450, 2.1],
+      ["meta", "Carousel – best sellers", "Retargeting – 30d visitors", "Site visitors", 310, 18000, 420, 17, 1290, 4.4],
+      ["meta", "Static – 20% off banner", "Prospecting – Broad", "Women 25-45", 540, 72000, 380, 4, 210, 1.6],
+      ["meta", "Founder story video", "Prospecting – Interests", "Yoga & fitness", 260, 30500, 610, 0, 0, 1.4],
+      ["meta", "New collection reel", "Prospecting – Broad", "Lookalike 1%", 12, 1400, 18, 0, 0, 1.0],
+      ["tiktok", "Unboxing trend video", "TikTok – Spark ads", "Broad 18-34", 690, 140000, 1650, 14, 760, 0],
+      ["tiktok", "Before / after video", "TikTok – Conversions", "Broad 18-34", 360, 52000, 410, 9, 590, 0],
+      ["gads", "Performance Max – All products", "Performance Max – All products", "performance max", 1150, 98000, 2100, 46, 4980, 0],
+      ["gads", "Search – Brand", "Search – Brand", "search", 220, 3100, 640, 21, 1720, 0],
+      ["gads", "Search – Generic 'yoga pants'", "Search – Generic 'yoga pants'", "search", 450, 21000, 520, 3, 190, 0]
+    ];
+    p.ads = demoAds.map(function (a, i) {
+      return { platform: a[0], level: a[0] === "gads" ? "campaign" : "ad", id: "demo" + i, name: a[1], campaign: a[2], adset: a[3], status: "ACTIVE", spend: a[4], impressions: a[5], clicks: a[6], purchases: a[7], revenue: a[8], frequency: a[9], reach: a[9] ? Math.round(a[5] / a[9]) : 0 };
+    });
+    var since = p.metrics.length ? p.metrics[0].date : today();
+    ["meta", "tiktok", "gads"].forEach(function (k) { p.adsMeta[k] = { source: "demo", since: since, until: today(), at: new Date().toISOString() }; });
+    p.connData = {
+      ga4: { at: new Date().toISOString(), summary: "Demo data", info: { sources: [
+        { source: "google / organic", sessions: 9800, transactions: 140, revenue: 7600 },
+        { source: "facebook / paid", sessions: 6200, transactions: 70, revenue: 3700 },
+        { source: "google / cpc", sessions: 4100, transactions: 95, revenue: 5200 },
+        { source: "(direct) / (none)", sessions: 3900, transactions: 88, revenue: 4900 },
+        { source: "tiktok / paid", sessions: 3600, transactions: 9, revenue: 420 },
+        { source: "klaviyo / email", sessions: 1500, transactions: 41, revenue: 2300 }
+      ], devices: [{ device: "mobile", sessions: 21000, transactions: 250 }, { device: "desktop", sessions: 7600, transactions: 180 }] } },
+      gsc: { at: new Date().toISOString(), summary: "Demo data", info: {
+        current: { clicks: 4120, impressions: 160000, ctr: 0.0257, position: 14.2 },
+        previous: { clicks: 3610, impressions: 151000, ctr: 0.0239, position: 15.1 },
+        queries: [{ query: "demo shop", clicks: 1300, impressions: 4100, position: 1.1 }, { query: "yoga pants high waist", clicks: 410, impressions: 22000, position: 7.8 }, { query: "seamless leggings", clicks: 220, impressions: 19000, position: 11.4 }],
+        pages: [] } },
+      clarity: { at: new Date().toISOString(), summary: "Demo data", info: { metrics: {
+        Traffic: { totalSessionCount: 4300, totalBotSessionCount: 210, distantUserCount: 3500 },
+        RageClickCount: { sessionsWithMetricPercentage: 6.4 },
+        DeadClickCount: { sessionsWithMetricPercentage: 11.2 },
+        QuickbackClick: { sessionsWithMetricPercentage: 8.1 },
+        ScriptErrorCount: { sessionsWithMetricPercentage: 3.2 }
+      } } },
+      gtm: { at: new Date().toISOString(), summary: "Demo data", info: { container: "www.demo-shop.com", publicId: "GTM-AB12CD3", version: "8", versionName: "Purchase tags", tags: 14, triggers: 9, variables: 21, changedAt: Date.now() - 5 * 86400000 } },
+      meta: { at: new Date().toISOString(), summary: "Demo data", info: { pixelEvents: { PageView: 21400, ViewContent: 9800, AddToCart: 1450, InitiateCheckout: 620, Purchase: 690 }, lastPurchaseAt: Date.now() - 3600000 } }
+    };
     addLog(p, "Demo project created");
     addLog(p, "Meta: status changed to Problem – double counted purchases", "meta");
     return p;
